@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>腾易周度业务工作台</title>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --ink: #172033;
+      --muted: #65758b;
+      --line: #d7e0eb;
+      --panel: #ffffff;
+      --panel-2: #f8fbff;
+      --blue: #1769e0;
+      --blue-2: #0d3f8d;
+      --blue-soft: #e7f0ff;
+      --green: #1d9b68;
+      --green-soft: #e7f7ef;
+      --orange: #d98216;
+      --orange-soft: #fff2df;
+      --red: #d84b4b;
+      --red-soft: #fdecec;
+      --gray-soft: #edf2f7;
+      --shadow: 0 16px 42px rgba(23, 32, 51, 0.08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background:
+        linear-gradient(120deg, rgba(23, 105, 224, 0.10), transparent 38%),
+        linear-gradient(180deg, #f8fbff 0, var(--bg) 420px),
+        var(--bg);
+      line-height: 1.45;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font: inherit; }
+
+    .shell { max-width: 1480px; margin: 0 auto; padding: 22px; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      border-bottom: 1px solid rgba(215, 224, 235, 0.9);
+      background: rgba(238, 243, 248, 0.88);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      max-width: 1480px; margin: 0 auto; padding: 12px 22px;
+      display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 230px; }
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center;
+      color: #fff; font-weight: 900;
+      background: linear-gradient(135deg, var(--blue), #38a1ff);
+      box-shadow: 0 10px 22px rgba(23, 105, 224, 0.25);
+    }
+    .brand-title { font-size: 15px; font-weight: 900; }
+    .brand-sub { color: var(--muted); font-size: 11px; margin-top: 1px; }
+
+    .nav { display: flex; gap: 6px; align-items: center; overflow-x: auto; white-space: nowrap; }
+    .nav a, .nav button {
+      border: 0; border-radius: 8px; padding: 8px 11px; color: var(--muted);
+      background: transparent; cursor: pointer; font-size: 13px; font-weight: 700;
+    }
+    .nav a:hover, .nav button:hover { color: var(--blue); background: var(--blue-soft); }
+
+    .sync-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--muted); }
+    .sync-dot { width: 7px; height: 7px; border-radius: 99px; background: var(--muted); }
+    .sync-dot.local { background: var(--orange); }
+    .sync-dot.online { background: var(--green); }
+    .sync-dot.offline { background: var(--muted); }
+
+    .hero { margin-top: 22px; }
+    .hero-main, .project-board, .update-panel, .doc-card {
+      background: var(--panel); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      position: relative; overflow: hidden; min-height: 260px; padding: 28px; color: #fff;
+      background: linear-gradient(135deg, rgba(13, 63, 141, 0.98), rgba(23, 105, 224, 0.95)), var(--blue);
+    }
+    .hero-main::after {
+      content: ""; position: absolute; right: -120px; top: -140px;
+      width: 330px; height: 330px; border-radius: 50%; border: 44px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .eyebrow {
+      position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 10px; border: 1px solid rgba(255,255,255,.26); border-radius: 99px;
+      color: #d6e7ff; font-size: 12px; font-weight: 800;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 99px; background: #35d08a;
+      box-shadow: 0 0 0 4px rgba(53, 208, 138, .16);
+    }
+
+    h1 {
+      position: relative; z-index: 1; margin: 18px 0 8px;
+      font-size: clamp(36px, 5vw, 64px); line-height: 1.06; letter-spacing: -0.05em;
+    }
+    .hero-main p { position: relative; z-index: 1; max-width: 780px; margin: 0; color: rgba(255,255,255,.82); font-size: 15px; }
+
+    .hero-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      min-height: 34px; padding: 7px 12px; border: 1px solid transparent; border-radius: 8px;
+      background: #fff; color: var(--ink); font-size: 13px; font-weight: 800; cursor: pointer;
+    }
+    .btn:hover { filter: brightness(.97); }
+    .btn.primary { color: #fff; background: var(--blue); border-color: var(--blue); }
+    .btn.ghost { color: #fff; background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.28); }
+    .btn.soft { color: var(--blue); background: var(--blue-soft); border-color: #c9dcff; }
+    .btn.warn { color: var(--orange); background: var(--orange-soft); border-color: #ffd8a8; }
+
+    .section { margin-top: 24px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 13px; }
+    .section-title { margin: 0; font-size: 22px; line-height: 1.15; letter-spacing: -0.02em; }
+    .section-desc { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+
+    .project-board { margin-bottom: 18px; overflow: hidden; }
+    .project-head {
+      display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px;
+      border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #fff, var(--panel-2));
+    }
+    .project-title-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .project-title { margin: 0; font-size: 22px; letter-spacing: -0.02em; }
+    .project-summary { margin: 8px 0 0; color: var(--muted); font-size: 13px; max-width: 900px; }
+    .project-tools { display: flex; align-items: flex-start; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px; width: fit-content;
+      padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 900; white-space: nowrap;
+    }
+    .tag::before { content: ""; width: 7px; height: 7px; border-radius: 99px; background: currentColor; }
+    .tag.green { color: var(--green); background: var(--green-soft); }
+    .tag.orange { color: var(--orange); background: var(--orange-soft); }
+    .tag.red { color: var(--red); background: var(--red-soft); }
+    .tag.blue { color: var(--blue); background: var(--blue-soft); }
+    .tag.gray { color: var(--muted); background: var(--gray-soft); }
+
+    .board-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .board-table th, .board-table td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 12px; vertical-align: top; font-size: 13px; }
+    .board-table th:last-child, .board-table td:last-child { border-right: 0; }
+    .board-table tr:last-child td { border-bottom: 0; }
+    .board-table th { color: var(--muted); background: #f3f7fc; font-size: 12px; text-align: left; font-weight: 950; }
+
+    .week-head { display: grid; gap: 2px; }
+    .week-head b { color: var(--ink); font-size: 13px; }
+    .week-head span { color: var(--muted); font-size: 11px; font-weight: 800; }
+
+    .submodule-cell { width: 240px; background: #fff; }
+    .submodule-name { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; font-size: 14px; font-weight: 950; }
+    .submodule-desc { color: var(--muted); font-size: 12px; }
+    .owner-line { margin-top: 9px; color: var(--muted); font-size: 12px; }
+
+    .week-cell { min-height: 126px; white-space: pre-wrap; word-break: break-word; }
+    .week-cell[contenteditable="true"] { outline: 2px dashed rgba(23, 105, 224, 0.25); outline-offset: -5px; background: #fffdf7; }
+    .week-status { margin-bottom: 8px; }
+    .week-cell.empty { min-height: 72px; background: transparent; border-radius: 6px; }
+    .cell-text { color: var(--ink); }
+
+    .cell-status-select {
+      display: block; width: 100%; margin-bottom: 8px;
+      padding: 5px 28px 5px 8px; border: 1px solid var(--line); border-radius: 6px;
+      font-size: 12px; font-weight: 800; color: var(--ink); background: #fff;
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2365758b' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 6px center; background-size: 12px;
+    }
+    .cell-status-select:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(23,105,224,.12); outline: none; }
+    .cell-editable {
+      min-height: 48px; padding: 6px; border: 1px dashed rgba(23,105,224,.25);
+      border-radius: 6px; background: #fffdf7; outline: none;
+      white-space: pre-wrap; word-break: break-word; font-size: 13px;
+    }
+    .cell-editable:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 2px rgba(23,105,224,.12); }
+    .cell-editable:empty::before { content: "输入进展..."; color: var(--muted); }
+
+    .factory-highlight { background: linear-gradient(180deg, #f7fbff, #ffffff); }
+    .factory-highlight .submodule-cell { background: var(--blue-soft); }
+
+    .update-panel { padding: 18px; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: 18px; }
+    .update-panel textarea { width: 100%; min-height: 180px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; resize: vertical; color: var(--ink); background: var(--panel-2); }
+
+    .update-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 13px; }
+    .update-list li { padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+
+    .doc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .doc-card { padding: 16px; }
+    .doc-card h3 { margin: 0; font-size: 16px; line-height: 1.28; }
+    .doc-card p { min-height: 56px; margin: 8px 0 14px; color: var(--muted); font-size: 13px; }
+
+    .footer { padding: 24px 0 10px; color: var(--muted); text-align: center; font-size: 12px; }
+    .hidden-input { display: none; }
+
+    .mode-banner {
+      text-align: center; padding: 8px 16px; font-size: 12px; font-weight: 800;
+      background: var(--orange-soft); color: var(--orange); border-bottom: 1px solid #ffd8a8;
+    }
+    .mode-banner.online { background: var(--green-soft); color: var(--green); border-color: #b7e6cf; }
+
+    @media (max-width: 1180px) {
+      .update-panel, .doc-grid { grid-template-columns: 1fr; }
+      .project-head { grid-template-columns: 1fr; }
+      .project-tools { justify-content: flex-start; }
+      .board-scroll { overflow-x: auto; }
+      .board-table { min-width: 980px; }
+    }
+    @media (max-width: 680px) {
+      .shell, .topbar-inner { padding-left: 14px; padding-right: 14px; }
+      .topbar { position: static; }
+      .topbar-inner, .section-head { align-items: flex-start; flex-direction: column; }
+      .hero-main, .project-head, .update-panel, .doc-card { padding: 16px; }
+      .board-table { min-width: 900px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mode-banner" id="modeBanner">📋 本地模式 — 数据保存在当前浏览器，如需共享请导出/导入周报表</div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="返回顶部">
+        <span class="brand-mark">腾</span>
+        <span>
+          <span class="brand-title">腾易周度业务工作台</span>
+          <span class="brand-sub" id="brandSub">本地版 · 支持 CSV 导入导出</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="页面导航">
+        <a href="#board">工作台</a>
+        <a href="#update">数据更新</a>
+        <a href="#docs">资料入口</a>
+        <a href="https://docs.qq.com/sheet/DRGVZZmpZb0xNT0Na" target="_blank" class="btn ghost" style="font-size:13px;color:#fff;" title="打开腾讯文档模板，业务同学在此更新数据">📊 腾讯文档模板</a>
+        <span class="sync-indicator" id="syncStatus" title="存储状态">
+          <span class="sync-dot local" id="syncDot"></span>
+          <span id="syncText">本地存储</span>
+        </span>
+        <button type="button" id="toggleEdit">编辑模式</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell" id="top">
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <span class="eyebrow"><span class="live-dot"></span>周度业务工作台</span>
+          <h1>腾易业务推进工作台</h1>
+          <p>在线协作版：数据保存在云端（Supabase），所有人看到同一份数据。📊 <a href="https://docs.qq.com/sheet/DRGVZZmpZb0xNT0Na" target="_blank" style="color:#fff;text-decoration:underline;">腾讯文档模板</a>供业务同学填写，导出 CSV 后即可在此导入。</p>
+        </div>
+        <div class="hero-actions">
+          <a class="btn ghost" href="#board">查看工作台</a>
+          <button class="btn ghost" type="button" id="exportTableTop">导出周报表</button>
+          <label class="btn ghost" for="importTableTop">导入周报表</label>
+          <input class="hidden-input" id="importTableTop" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values">
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="board">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">周度项目工作台</h2>
+        </div>
+      </div>
+      <div id="boardRoot"></div>
+    </section>
+
+    <section class="section" id="update">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">数据更新</h2>
+          <p class="section-desc">推荐用固定列周报表维护，业务同学可以直接在腾讯文档 / Excel 里填写，再粘贴或导入到页面。</p>
+        </div>
+      </div>
+      <div class="update-panel">
+        <div>
+          <textarea id="tableBox" spellcheck="false"></textarea>
+          <div class="hero-actions" style="margin-top:12px">
+            <button class="btn primary" type="button" id="applyTable">应用表格内容</button>
+            <button class="btn soft" type="button" id="exportTable">导出当前周报表</button>
+            <button class="btn soft" type="button" id="downloadTemplate">下载空白表格模板</button>
+            <label class="btn warn" for="importTable">导入 CSV / TSV 文件</label>
+            <input class="hidden-input" id="importTable" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values">
+          </div>
+        </div>
+        <ul class="update-list">
+          <li><b>固定列格式：</b>项目模块、子模块、周次、状态、进展、Owner。状态可留空，或填 On Track / At Risk / Needs Alignment。</li>
+          <li><b>推荐流程：</b>每周各负责人在共享表格里按固定列更新，汇总人复制整张表到左侧文本框，点击"应用表格内容"。</li>
+          <li><b>共享方式：</b>编辑完成后点击"导出周报表"下载 CSV，发给同事；同事用"导入 CSV"加载。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="docs">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">资料入口</h2>
+          <p class="section-desc">腾讯文档 / 企业微信文档入口。</p>
+        </div>
+      </div>
+      <div class="doc-grid" id="docGrid"></div>
+    </section>
+
+    <footer class="footer" id="pageFooter">腾易周度业务工作台 · 正在连接 Supabase...</footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    const STORAGE_KEY = "tengyi-weekly-workbench";
+
+    const defaultWorkspaceData = {
+      version: 3,
+      cycle: "W1 本周",
+      updatedAt: "2026-06-17",
+      weeks: [
+        { key: "Week 1", label: "W1", date: "6/17 本周" },
+        { key: "Week 2", label: "W2", date: "6/24" },
+        { key: "Week 3", label: "W3", date: "7/1" },
+        { key: "Week 4", label: "W4", date: "7/8" }
+      ],
+      docs: [
+        { title: "厂店通服务商进店代播腾讯激励专项", project: "厂店", desc: "腾讯文档：包含项目规划汇总、服务商执行情况、服务商主播、测试规划等。", url: "https://doc.weixin.qq.com/sheet/e3_AUkAzgaGANACNS9yCfbkaQaqCQN0W?scode=AJEAIQdfAAoHLgkVOWAbcAbgZxADE&tab=BB08J2" },
+        { title: "大交通厂店业务关键打法拆解", project: "企微 / 厂店策略", desc: "企业微信文档：承接大交通厂店整体策略、企微链路和视频号生态打法。", url: "https://doc.weixin.qq.com/doc/w3_ARoAEgajAJ4CNrjWiC5orQyWqzAOR?scode=AJEAIQdfAAowdssu4KARoAEgajAJ4" },
+        { title: "竞价专项文档", project: "线索中台", desc: "腾讯文档：包含竞价专项推进表、客户数据、26 年规划等。", url: "https://docs.qq.com/sheet/DVGVyekp6ZndQbEpF?tab=000001" }
+      ],
+      projects: [
+        {
+          id: "factory", name: "厂店", status: "on-track", statusText: "On Track", owner: "腾易厂店专项组",
+          summary: "汽车直播线索项目按 PMO、行运、服务商三类推进，当前核心是服务商/主播开播测试与线索交付链路。",
+          workstreams: [
+            { id: "factory-pmo", name: "PMO / 基础搭建", owner: "PMO", desc: "成本品牌确认、开户充值、线索对接等基础搭建。", cells: [{ status: "on-track", text: "成本品牌确认、开户充值、线索对接进入推进；后续衔接问题收集反馈、费用核算与成本优化。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
+            { id: "factory-ops", name: "行运 / 策略交付", owner: "行运", desc: "策略同步服务商、封控同步、盯播安排、主播评估与 SOP 沉淀。", cells: [{ status: "on-track", text: "策略同步服务商、封控同步、盯播安排推进；下一步进入主播能力评估、话术持续赋能、盯播复盘与策略迭代。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
+            { id: "factory-service", name: "服务商 / 主播", owner: "服务商协同", highlight: true, desc: "当前重点：5 个服务商、6 个城市、90+ 门店、21 名主播、840 场开播测算。", cells: [{ status: "on-track", text: "项目成本核算、人货场就绪、话术投放安排推进；服务商进店代播测算覆盖 6 城、5 个服务商、90+ 门店、21 名主播、840 场，单场激励 1000 元。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] }
+          ]
+        },
+        {
+          id: "leads", name: "线索中台", status: "on-track", statusText: "On Track", owner: "周星星 / 孙长柱",
+          summary: "通过线索中台模式提升 PCAD 板块拿量能力，降低 CPL，提升到店和成交后效。",
+          workstreams: [
+            { id: "leads-progress", name: "上线进展", owner: "周星星", desc: "客户上线、消耗规模、后效表现。", cells: [{ status: "on-track", text: "通过线索中台模式提升 PCAD 板块拿量能力，降低 CPL，提升后效。当前累计上线 9 个客户，YTD 370w，QTD 366w；9 个客户在后效上均有一定提升，已上线客户消耗整体增长 8%。投放客户：长安、凯程、腾势、阿维塔、深蓝、一汽丰田、长城、广汽丰田、东风奕派。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
+            { id: "leads-opportunity", name: "商机拓展", owner: "周星星", desc: "Q2 新增客户、消耗拉动、客户排摸。", cells: [{ status: "on-track", text: "应用场景包括线索增量、降低 CPL、提升到店率/成交率。Q2 商机：一汽捷达（新增）、一汽大众（新增）、捷途、奇瑞、日产、一汽奥迪、红旗、奔驰；消耗拉动分为提升消耗 2 个客户、停投拉回 3 个客户、客户要求提高稳住预算 3 个客户。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
+            { id: "leads-acceptance", name: "验收与口径", owner: "周星星 / 孙长柱", desc: "试点复盘、客户分类、前后效监控。", cells: [{ status: "on-track", text: "3 月底已 0-1 跑通线索中台流程，腾势试点上线，累计消耗 4.4 万。客户需求分两类：降 CPL 客户如长安凯程；提后效客户包括长安汽车、深蓝、阿维塔、比亚迪、奕派、一汽丰田、捷途、奇瑞、日产、长城、一汽奥迪、理想等。后续持续跑通链路、监控前后效、完成案例包装。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] }
+          ]
+        },
+        {
+          id: "wechat", name: "企微", status: "decision", statusText: "Needs Alignment", owner: "马钰乔",
+          summary: "探索企微在前链路和后链路共同正向的标杆案例，沉淀适合大交通的产品形态。",
+          workstreams: [
+            { id: "wechat-connection", name: "企微承接链路", owner: "马钰乔", desc: "企微+获客助手、直连企微、先表单后企微。", cells: [{ status: "decision", text: "产品链路探索包括添加企微+转化宝、先表单后企微（深 OG 加后效提升）、企微/微信客服+AI 转化工具。直连企微新链路为外层 -> 落地页 -> 多问答组件 -> 加微，用于筛选高意向客户，解决经销商温冷线索占比高的问题，后续在蔚来客户上试点。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
+            { id: "wechat-cs", name: "微信客服链路", owner: "马钰乔", desc: "易车线索链路后效追踪、线索下发实时化、商机排摸。", cells: [{ status: "on-track", text: "易慧智能微信客服链路成交率约 1%，略低于易车表单链路；当前优化线索下发时间，做到实时下发并继续追踪效果。商机排摸在案例包装中，本月做一轮商机收集。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
+            { id: "wechat-tooling", name: "数据与工具", owner: "马钰乔 / 产品技术", desc: "数据打通、运营 SOP、AI 工具选型。", cells: [{ status: "risk", text: "已突破线索通回传字段限制，能够支持客户 CRM 必填字段和 clickid 字段；线索下发和一方数据回传技术上无卡点。当前痛点集中在后链路运营监控工具、运营 SOP 指导、低意向人群模型优化；AI 工具侧汽车客户对三方工具数据安全要求高，可选易车易慧智能或 AMS CHATBOT。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] }
+          ]
+        }
+      ]
+    };
+
+    const statusClass = { "on-track": "green", "risk": "orange", "decision": "red", "paused": "gray", "todo": "gray" };
+    const statusText = { "on-track": "On Track", "risk": "At Risk", "decision": "Needs Alignment", "paused": "Paused", "todo": "Todo" };
+
+    // ---- Data layer: Supabase (primary) + localStorage (fallback) ----
+    const SB_URL = "https://wejvhsicmleszehicwqg.supabase.co";
+    const SB_KEY = "sb_publishable_iBp8TOlOqOch6UeF3S5Wew_V4zG_er7";
+    let sbClient = null;
+    let workspaceData = null;
+    let editMode = false;
+    let saveTimer = null;
+    let dataMode = "connecting"; // "cloud" | "local" | "connecting"
+    let cloudVersion = 0;
+    let realtimeChannel = null;
+
+    function loadFromLocal() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return structuredClone(defaultWorkspaceData);
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.version === defaultWorkspaceData.version ? parsed : structuredClone(defaultWorkspaceData);
+      } catch (e) {
+        return structuredClone(defaultWorkspaceData);
+      }
+    }
+
+    function saveToLocal() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(workspaceData));
+    }
+
+    let cloudError = "";
+
+    async function initSupabase() {
+      try {
+        sbClient = supabase.createClient(SB_URL, SB_KEY);
+        // Quick connectivity test
+        const { error } = await sbClient.from("workbench").select("id").limit(1);
+        if (error) {
+          // Table might not exist
+          if (error.code === "42P01") {
+            cloudError = "数据库表未创建，请在 Supabase SQL Editor 中执行建表语句";
+          } else {
+            cloudError = "数据库连接: " + (error.message || error.code);
+          }
+          return false;
+        }
+        return true;
+      } catch (e) {
+        cloudError = "Supabase 连接失败: " + (e.message || e);
+        return false;
+      }
+    }
+
+    async function loadFromCloud() {
+      try {
+        const { data, error } = await sbClient.from("workbench").select("*").eq("id", "tengyi-weekly").maybeSingle();
+        if (error || !data) return null;
+        cloudVersion = data.version || 1;
+        return data.workspace;
+      } catch (e) { return null; }
+    }
+
+    async function saveToCloud(data) {
+      try {
+        cloudVersion++;
+        const { error } = await sbClient.from("workbench").upsert({
+          id: "tengyi-weekly",
+          workspace: data,
+          version: cloudVersion,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "id" });
+        if (error) { cloudVersion--; return false; }
+        return true;
+      } catch (e) {
+        cloudVersion--;
+        return false;
+      }
+    }
+
+    function setupRealtime() {
+      if (!sbClient) return;
+      realtimeChannel = sbClient
+        .channel("workbench-sync")
+        .on("postgres_changes", { event: "*", schema: "public", table: "workbench", filter: "id=eq.tengyi-weekly" }, function(payload) {
+          if (payload.new && payload.new.version > cloudVersion) {
+            workspaceData = payload.new.workspace;
+            cloudVersion = payload.new.version;
+            saveToLocal();
+            renderAll();
+          }
+        })
+        .subscribe();
+    }
+
+    function setSyncStatus(className, text) {
+      document.getElementById("syncDot").className = "sync-dot " + className;
+      document.getElementById("syncText").textContent = text;
+    }
+
+    function setModeUI(mode) {
+      var banner = document.getElementById("modeBanner");
+      var brandSub = document.getElementById("brandSub");
+      var footer = document.getElementById("pageFooter");
+      if (mode === "cloud") {
+        setSyncStatus("online", "在线协作");
+        banner.textContent = "🌐 在线协作模式 — 所有人编辑实时同步（Supabase）";
+        banner.className = "mode-banner online";
+        brandSub.textContent = "协作版 · 实时同步";
+        footer.textContent = "腾易周度业务工作台 · Supabase 协作版 · 多人实时同步";
+      } else {
+        setSyncStatus("local", "本地存储");
+        var errDetail = cloudError ? "（" + cloudError + "）" : "";
+        banner.textContent = "📋 本地模式 — 后端未连接 " + errDetail;
+        banner.className = "mode-banner";
+        brandSub.textContent = "本地版 · 支持 CSV 导入导出";
+        footer.textContent = "腾易周度业务工作台 · 本地存储模式";
+      }
+    }
+
+    // ---- Init ----
+    async function initData() {
+      var cloudOk = await initSupabase();
+      if (cloudOk) {
+        var cloudData = await loadFromCloud();
+        if (cloudData) {
+          workspaceData = cloudData;
+        } else {
+          // Cloud connected but no doc yet — upload initial data
+          workspaceData = loadFromLocal();
+          await saveToCloud(workspaceData);
+        }
+        dataMode = "cloud";
+        setModeUI("cloud");
+        setupRealtime();
+        return;
+      }
+      // Fallback to localStorage
+      workspaceData = loadFromLocal();
+      dataMode = "local";
+      setModeUI("local");
+    }
+
+    function saveData() {
+      saveToLocal();
+      if (dataMode === "cloud" && sbClient) {
+        saveToCloud(workspaceData).catch(function(){});
+      }
+      syncTableBox();
+    }
+
+    // ---- Render ----
+    function esc(text) {
+      return String(text ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+
+    function weekKey(week) { return typeof week === "string" ? week : week.key; }
+
+    function weekHeader(week) {
+      if (typeof week === "string") return '<div class="week-head"><b>' + esc(week) + '</b></div>';
+      return '<div class="week-head"><b>' + esc(week.label) + '</b><span>' + esc(week.date) + '</span></div>';
+    }
+
+    function renderBoard() {
+      document.getElementById("boardRoot").innerHTML = workspaceData.projects.map(function(project, pi) {
+        var rows = project.workstreams.map(function(stream, si) {
+          var cellsHtml = workspaceData.weeks.map(function(week, wi) {
+            var cell = stream.cells[wi] || { status: "todo", text: "" };
+            var isEmpty = !cell.text && !cell.status;
+            if (editMode) {
+              var selectOpts = ['<option value="">-- 状态 --</option>'];
+              Object.keys(statusText).forEach(function(k) {
+                selectOpts.push('<option value="' + k + '"' + (cell.status === k ? ' selected' : '') + '>' + esc(statusText[k]) + '</option>');
+              });
+              return '<td><div class="week-cell" data-project="' + pi + '" data-stream="' + si + '" data-week="' + wi + '"><select class="cell-status-select">' + selectOpts.join("") + '</select><div class="cell-text cell-editable" contenteditable="true">' + esc(cell.text) + '</div></div></td>';
+            }
+            var sHtml = cell.status ? '<div class="week-status"><span class="tag ' + (statusClass[cell.status] || "gray") + '">' + esc(statusText[cell.status] || cell.status) + '</span></div>' : "";
+            return '<td><div class="week-cell' + (isEmpty ? " empty" : "") + '" data-project="' + pi + '" data-stream="' + si + '" data-week="' + wi + '">' + (isEmpty ? "" : sHtml + '<div class="cell-text">' + esc(cell.text) + '</div>') + '</div></td>';
+          }).join("");
+          return '<tr class="' + (stream.highlight ? "factory-highlight" : "") + '"><td class="submodule-cell"><div class="submodule-name">' + (stream.highlight ? "★" : "•") + ' ' + esc(stream.name) + '</div><div class="submodule-desc">' + esc(stream.desc) + '</div><div class="owner-line">Owner：' + esc(stream.owner) + '</div></td>' + cellsHtml + '</tr>';
+        }).join("");
+        return '<section class="project-board" id="' + esc(project.id) + '"><div class="project-head"><div><div class="project-title-line"><h3 class="project-title">' + esc(project.name) + '</h3><span class="tag ' + (statusClass[project.status] || "gray") + '">' + esc(project.statusText) + '</span></div><p class="project-summary">' + esc(project.summary) + '</p></div><div class="project-tools"><span class="tag blue">' + esc(project.owner) + '</span><button class="btn soft" type="button" data-scroll-update="' + esc(project.id) + '">更新该模块</button></div></div><div class="board-scroll"><table class="board-table"><thead><tr><th class="submodule-cell">子模块</th>' + workspaceData.weeks.map(function(w) { return '<th>' + weekHeader(w) + '</th>'; }).join("") + '</tr></thead><tbody>' + rows + '</tbody></table></div></section>';
+      }).join("");
+
+      document.querySelectorAll("[data-scroll-update]").forEach(function(btn) {
+        btn.addEventListener("click", function() { document.getElementById("update").scrollIntoView({ behavior: "smooth" }); });
+      });
+
+      // Status dropdown (edit mode)
+      document.querySelectorAll(".cell-status-select").forEach(function(sel) {
+        sel.addEventListener("change", function() {
+          var cell = sel.closest(".week-cell");
+          var p = +cell.dataset.project, s = +cell.dataset.stream, w = +cell.dataset.week;
+          workspaceData.projects[p].workstreams[s].cells[w].status = sel.value;
+          if (saveTimer) clearTimeout(saveTimer);
+          saveTimer = setTimeout(saveData, 600);
+        });
+      });
+
+      // Text editable (edit mode)
+      document.querySelectorAll(".cell-editable").forEach(function(div) {
+        div.addEventListener("input", function() {
+          var cell = div.closest(".week-cell");
+          var p = +cell.dataset.project, s = +cell.dataset.stream, w = +cell.dataset.week;
+          workspaceData.projects[p].workstreams[s].cells[w].text = div.innerText.trim();
+          if (saveTimer) clearTimeout(saveTimer);
+          saveTimer = setTimeout(saveData, 600);
+        });
+      });
+    }
+
+    function renderDocs() {
+      document.getElementById("docGrid").innerHTML = workspaceData.docs.map(function(doc) {
+        return '<article class="doc-card"><h3>' + esc(doc.title) + '</h3><p><b>' + esc(doc.project) + '</b><br>' + esc(doc.desc) + '</p><a class="btn primary" href="' + esc(doc.url) + '" target="_blank" rel="noopener">打开资料 ↗</a></article>';
+      }).join("");
+    }
+
+    function renderAll() { renderBoard(); renderDocs(); syncTableBox(); }
+
+    // ---- CSV / TSV ----
+    function statusToLabel(s) { return s ? (statusText[s] || s || "Todo") : ""; }
+
+    function labelToStatus(v) {
+      v = String(v || "").trim().toLowerCase();
+      if (!v) return "";
+      var m = { "on track": "on-track", "正常": "on-track", "正常推进": "on-track", "at risk": "risk", "risk": "risk", "风险": "risk", "存在风险": "risk", "needs alignment": "decision", "decision": "decision", "需协调": "decision", "需对齐": "decision", "todo": "todo", "待办": "todo", "待推进": "todo", "paused": "paused", "暂停": "paused" };
+      return m[v] || "todo";
+    }
+
+    function rowsFromData(blank) {
+      blank = !!blank;
+      var rows = [["项目模块", "子模块", "周次", "状态", "进展", "Owner"]];
+      workspaceData.projects.forEach(function(proj) {
+        proj.workstreams.forEach(function(stream) {
+          workspaceData.weeks.forEach(function(week, wi) {
+            var cell = stream.cells[wi] || { status: "todo", text: "" };
+            rows.push([proj.name, stream.name, weekKey(week), blank ? "" : statusToLabel(cell.status), blank ? "" : cell.text, stream.owner || proj.owner || ""]);
+          });
+        });
+      });
+      return rows;
+    }
+
+    function toCsv(rows) {
+      return rows.map(function(row) {
+        return row.map(function(v) {
+          var t = String(v || "").replace(/\r?\n/g, " / ");
+          return /[",\n]/.test(t) ? '"' + t.replaceAll('"', '""') + '"' : t;
+        }).join(",");
+      }).join("\n");
+    }
+
+    function parseDelimitedLine(line, delim) {
+      if (delim === "\t") return line.split("\t");
+      var cells = [], cur = "", quoted = false;
+      for (var i = 0; i < line.length; i++) {
+        var ch = line[i], nx = line[i + 1];
+        if (ch === '"' && quoted && nx === '"') { cur += '"'; i++; }
+        else if (ch === '"') { quoted = !quoted; }
+        else if (ch === delim && !quoted) { cells.push(cur); cur = ""; }
+        else { cur += ch; }
+      }
+      cells.push(cur);
+      return cells;
+    }
+
+    function parseTableText(text) {
+      var t = String(text || "").trim();
+      if (!t) return [];
+      var delim = t.includes("\t") ? "\t" : ",";
+      return t.split(/\r?\n/).filter(Boolean).map(function(l) { return parseDelimitedLine(l, delim).map(function(c) { return c.trim(); }); });
+    }
+
+    function applyRows(rows) {
+      if (!rows.length) return;
+      var hdr = rows[0].map(function(c) { return c.trim(); });
+      var required = ["项目模块", "子模块", "周次", "状态", "进展"];
+      var missing = required.filter(function(n) { return !hdr.includes(n); });
+      if (missing.length) { alert("缺少必要列：" + missing.join("、")); return; }
+      var idx = function(n) { return hdr.indexOf(n); };
+      var pi = idx("项目模块"), si = idx("子模块"), wi = idx("周次"), sti = idx("状态"), ti = idx("进展"), oi = hdr.includes("Owner") ? idx("Owner") : -1;
+      var changed = 0;
+      rows.slice(1).forEach(function(row) {
+        var proj = workspaceData.projects.find(function(p) { return p.name === row[pi]; });
+        if (!proj) return;
+        var stream = proj.workstreams.find(function(s) { return s.name === row[si]; });
+        if (!stream) return;
+        var weekI = workspaceData.weeks.findIndex(function(w) { return weekKey(w) === row[wi] || (typeof w !== "string" && (w.label === row[wi] || w.date === row[wi])); });
+        if (weekI < 0) return;
+        stream.cells[weekI] = { status: labelToStatus(row[sti]), text: row[ti] || "" };
+        if (oi >= 0 && row[oi]) stream.owner = row[oi];
+        changed++;
+      });
+      saveData();
+      renderAll();
+      alert("已更新 " + changed + " 条周报记录。");
+    }
+
+    function syncTableBox() {
+      document.getElementById("tableBox").value = rowsFromData(false).map(function(r) { return r.join("\t"); }).join("\n");
+    }
+
+    function downloadText(fname, text, type) {
+      var blob = new Blob([text], { type: type || "text/plain;charset=utf-8" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = fname;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function importTableFile(file) {
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function() {
+        document.getElementById("tableBox").value = reader.result;
+        applyRows(parseTableText(reader.result));
+      };
+      reader.readAsText(file, "utf-8");
+    }
+
+    // ---- Event bindings ----
+    document.getElementById("toggleEdit").addEventListener("click", function() {
+      editMode = !editMode;
+      this.textContent = editMode ? "退出编辑" : "编辑模式";
+      renderBoard();
+    });
+    document.getElementById("applyTable").addEventListener("click", function() { applyRows(parseTableText(document.getElementById("tableBox").value)); });
+    document.getElementById("exportTable").addEventListener("click", function() { downloadText("腾易周度工作台_当前周报.csv", toCsv(rowsFromData(false)), "text/csv;charset=utf-8"); });
+    document.getElementById("exportTableTop").addEventListener("click", function() { downloadText("腾易周度工作台_当前周报.csv", toCsv(rowsFromData(false)), "text/csv;charset=utf-8"); });
+    document.getElementById("downloadTemplate").addEventListener("click", function() { downloadText("腾易周度工作台_空白周报模板.csv", toCsv(rowsFromData(true)), "text/csv;charset=utf-8"); });
+    document.getElementById("importTable").addEventListener("change", function(e) { importTableFile(e.target.files[0]); });
+    document.getElementById("importTableTop").addEventListener("change", function(e) { importTableFile(e.target.files[0]); });
+
+    // ---- Start ----
+    (async function() {
+      var rendered = false;
+      // Safety: force render after 5s even if init hangs
+      var safety = setTimeout(function() {
+        if (rendered) return;
+        workspaceData = workspaceData || loadFromLocal();
+        renderAll();
+        rendered = true;
+      }, 5000);
+      try {
+        await initData();
+      } catch (e) {
+        console.error("Init failed:", e.message);
+        workspaceData = loadFromLocal();
+        dataMode = "local";
+        setModeUI("local");
+      }
+      if (rendered) return;
+      clearTimeout(safety);
+      renderAll();
+    })();
+  </script>
+</body>
+</html>

@@ -283,7 +283,7 @@
       <div class="section-head">
         <div>
           <h2 class="section-title">数据更新</h2>
-          <p class="section-desc">推荐用列式周报表维护：项目模块 / 子模块 / 状态 / Owner / W1~W4。业务同学可在企微文档中填写，复制粘贴或导入到此页面。</p>
+          <p class="section-desc">支持企微文档的列式周报表：项目模块 / 子模块 / 状态 / Owner / week 1~week 4。合并单元格、空白项目列和常用名称变体会自动识别。</p>
         </div>
       </div>
       <div class="update-panel">
@@ -291,14 +291,16 @@
           <textarea id="tableBox" spellcheck="false"></textarea>
           <div class="hero-actions" style="margin-top:12px">
             <button class="btn primary" type="button" id="applyTable">应用表格内容</button>
+            <button class="btn primary" type="button" id="importClipboard">从剪贴板一键导入</button>
             <button class="btn soft" type="button" id="exportTable">导出当前周报表</button>
-            <button class="btn soft" type="button" id="downloadTemplate">下载空白表格模板</button>
+            <a class="btn soft" href="腾易周度工作台_空白周报模板.xlsx" download>下载 Excel 周报模板</a>
             <label class="btn warn" for="importTable">导入 CSV / TSV 文件</label>
             <input class="hidden-input" id="importTable" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values">
           </div>
         </div>
         <ul class="update-list">
-          <li><b>列式格式：</b>项目模块、子模块、状态、Owner、W1、W2、W3、W4。每个子模块占一行，四个周的内容各自占一列。状态可选 On Track / At Risk / Needs Alignment / Todo。</li>
+          <li><b>一键导入：</b>在企微文档中选中整张表并复制，回到此页点“从剪贴板一键导入”。也可下载 CSV / TSV 后直接选择文件。</li>
+          <li><b>列式格式：</b>项目模块、子模块、状态、Owner、week 1、week 2、week 3、week 4。每个子模块占一行。状态可选 On Track / At Risk / Needs Alignment / Todo。</li>
           <li><b>推荐流程：</b>每周各负责人在<a href="https://doc.weixin.qq.com/sheet/e3_AbcAbgZxADECNIM6ZhJmVTkqAWGHW?scode=AJEAIQdfAAoKVFmXalAbcAbgZxADE&tab=7tk20e" target="_blank">企微周报模板</a>里按列更新，汇总人复制整张表到左侧文本框，点击"应用表格内容"。</li>
           <li><b>共享方式：</b>编辑完成后点击"导出周报表"下载 TSV，发给同事导入。</li>
         </ul>
@@ -606,10 +608,60 @@
       return m[v] || "todo";
     }
 
+    function normalizedName(value) {
+      return String(value || "").trim().toLowerCase().replace(/[\s/\\_·・—-]+/g, "").replace(/模块$/g, "");
+    }
+
+    const streamNameAliases = {
+      "服务商主播": "factory-service",
+      "服务商主播模块": "factory-service",
+      "pmo基础搭建": "factory-pmo",
+      "行运策略交付": "factory-ops",
+      "上线进展": "leads-progress",
+      "商机拓展": "leads-opportunity",
+      "微信客服链路": "wechat-cs",
+      "数据与工具": "wechat-tooling"
+    };
+
+    function findStream(projectName, streamName) {
+      var normalizedStream = normalizedName(streamName);
+      var aliasId = streamNameAliases[normalizedStream];
+      if (aliasId) {
+        for (var ai = 0; ai < workspaceData.projects.length; ai++) {
+          var aliasStream = workspaceData.projects[ai].workstreams.find(function(item) { return item.id === aliasId; });
+          if (aliasStream) return { project: workspaceData.projects[ai], stream: aliasStream };
+        }
+      }
+      var projectMatches = workspaceData.projects.filter(function(project) {
+        var a = normalizedName(project.name), b = normalizedName(projectName);
+        return !b || a === b || (a === "厂店" && b === "厂店业务");
+      });
+      var searchProjects = projectMatches.length ? projectMatches : workspaceData.projects;
+      for (var i = 0; i < searchProjects.length; i++) {
+        var stream = searchProjects[i].workstreams.find(function(item) {
+          return (aliasId && item.id === aliasId) || normalizedName(item.name) === normalizedStream;
+        });
+        if (stream) return { project: searchProjects[i], stream: stream };
+      }
+      return null;
+    }
+
     // Column format: 项目模块 | 子模块 | 状态 | Owner | W1 | W2 | W3 | W4
     // One row per submodule, W1 status = the "状态" column
     function rowsFromData(blank) {
       blank = !!blank;
+      if (blank) {
+        return [
+          ["项目模块", "子模块", "状态", "Owner", "week 1", "week 2", "week 3"],
+          ["厂店业务", "服务商主播模块", "On Track", "", "", "", ""],
+          ["", "PMO基础搭建", "On Track", "", "", "", ""],
+          ["", "行运策略交付", "On Track", "", "", "", ""],
+          ["线索中台", "上线进展", "On Track", "", "", "", ""],
+          ["", "商机拓展", "On Track", "", "", "", ""],
+          ["企微", "微信客服链路", "On Track", "", "", "", ""],
+          ["", "数据与工具", "At Risk", "", "", "", ""]
+        ];
+      }
       var header = ["项目模块", "子模块", "状态", "Owner"];
       workspaceData.weeks.forEach(function(w) { header.push(weekKey(w)); });
       var rows = [header];
@@ -693,20 +745,20 @@
         var knownCols = new Set(["项目模块", "子模块", "状态", "Owner"]);
         var weekColIndices = [];
         hdr.forEach(function(col, i) { if (!knownCols.has(col)) weekColIndices.push(i); });
+        var lastProjectName = "";
+        var skipped = [];
         rows.slice(1).forEach(function(row) {
-          var proj = workspaceData.projects.find(function(p) { return p.name === row[pIdx]; });
-          if (!proj) return;
-          var stream = proj.workstreams.find(function(s) { return s.name === row[sIdx]; });
-          if (!stream) return;
+          if (row[pIdx]) lastProjectName = row[pIdx];
+          var match = findStream(row[pIdx] || lastProjectName, row[sIdx]);
+          if (!match) { if (row[sIdx]) skipped.push(row[sIdx]); return; }
+          var stream = match.stream;
           // Status → W1 cell status
           if (stIdx >= 0 && row[stIdx]) {
             stream.cells[0].status = labelToStatus(row[stIdx]);
           }
           // W1~W4 text from remaining columns
           weekColIndices.forEach(function(colI, wi) {
-            if (wi < workspaceData.weeks.length && row[colI]) {
-              stream.cells[wi].text = row[colI];
-            }
+            if (wi < workspaceData.weeks.length) stream.cells[wi].text = row[colI] || "";
           });
           // Owner
           if (owIdx >= 0 && row[owIdx]) stream.owner = row[owIdx];
@@ -715,7 +767,9 @@
       }
       saveData();
       renderAll();
-      alert("已更新 " + changed + " 条周报记录。");
+      var message = "已导入 " + changed + " 条周报记录。";
+      if (typeof skipped !== "undefined" && skipped.length) message += "\n未匹配：" + skipped.join("、");
+      alert(message);
     }
 
     function syncTableBox() {
@@ -741,6 +795,17 @@
       reader.readAsText(file, "utf-8");
     }
 
+    async function importFromClipboard() {
+      try {
+        var text = await navigator.clipboard.readText();
+        if (!text.trim()) { alert("剪贴板里没有表格内容。"); return; }
+        document.getElementById("tableBox").value = text;
+        applyRows(parseTableText(text));
+      } catch (e) {
+        alert("浏览器未允许读取剪贴板。请把整张表粘贴到左侧文本框，再点“应用表格内容”。");
+      }
+    }
+
     // ---- Event bindings ----
     document.getElementById("toggleEdit").addEventListener("click", function() {
       editMode = !editMode;
@@ -748,6 +813,7 @@
       renderBoard();
     });
     document.getElementById("applyTable").addEventListener("click", function() { applyRows(parseTableText(document.getElementById("tableBox").value)); });
+    document.getElementById("importClipboard").addEventListener("click", importFromClipboard);
     document.getElementById("exportTable").addEventListener("click", function() {
       var rows = rowsFromData(false);
       downloadText("腾易周度工作台_当前周报.tsv", rows.map(function(r) { return r.join("\t"); }).join("\n"), "text/tab-separated-values;charset=utf-8");
@@ -755,10 +821,6 @@
     document.getElementById("exportTableTop").addEventListener("click", function() {
       var rows = rowsFromData(false);
       downloadText("腾易周度工作台_当前周报.tsv", rows.map(function(r) { return r.join("\t"); }).join("\n"), "text/tab-separated-values;charset=utf-8");
-    });
-    document.getElementById("downloadTemplate").addEventListener("click", function() {
-      var rows = rowsFromData(true);
-      downloadText("腾易周度工作台_空白周报模板.tsv", rows.map(function(r) { return r.join("\t"); }).join("\n"), "text/tab-separated-values;charset=utf-8");
     });
     document.getElementById("importTable").addEventListener("change", function(e) { importTableFile(e.target.files[0]); });
     document.getElementById("importTableTop").addEventListener("change", function(e) { importTableFile(e.target.files[0]); });

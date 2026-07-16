@@ -243,7 +243,7 @@
         <a href="#board">工作台</a>
         <a href="#update">数据更新</a>
         <a href="#docs">资料入口</a>
-        <a href="https://docs.qq.com/sheet/DRGVZZmpZb0xNT0Na" target="_blank" class="btn ghost" style="font-size:13px;color:#fff;" title="打开腾讯文档模板，业务同学在此更新数据">📊 腾讯文档模板</a>
+        <a href="https://doc.weixin.qq.com/sheet/e3_AbcAbgZxADECNIM6ZhJmVTkqAWGHW?scode=AJEAIQdfAAoKVFmXalAbcAbgZxADE&tab=7tk20e" target="_blank" class="btn ghost" style="font-size:13px;color:#fff;" title="企微周报模板：项目模块 / 子模块 / 状态 / Owner / W1~W4">📊 周报模板</a>
         <span class="sync-indicator" id="syncStatus" title="存储状态">
           <span class="sync-dot local" id="syncDot"></span>
           <span id="syncText">本地存储</span>
@@ -259,7 +259,7 @@
         <div>
           <span class="eyebrow"><span class="live-dot"></span>周度业务工作台</span>
           <h1>腾易业务推进工作台</h1>
-          <p>在线协作版：数据保存在云端（Supabase），所有人看到同一份数据。📊 <a href="https://docs.qq.com/sheet/DRGVZZmpZb0xNT0Na" target="_blank" style="color:#fff;text-decoration:underline;">腾讯文档模板</a>供业务同学填写，导出 CSV 后即可在此导入。</p>
+          <p>在线协作版：数据保存在云端（Supabase），所有人看到同一份数据。📊 <a href="https://doc.weixin.qq.com/sheet/e3_AbcAbgZxADECNIM6ZhJmVTkqAWGHW?scode=AJEAIQdfAAoKVFmXalAbcAbgZxADE&tab=7tk20e" target="_blank" style="color:#fff;text-decoration:underline;">企微周报模板</a>供业务同学填写，导出后在此导入。</p>
         </div>
         <div class="hero-actions">
           <a class="btn ghost" href="#board">查看工作台</a>
@@ -283,7 +283,7 @@
       <div class="section-head">
         <div>
           <h2 class="section-title">数据更新</h2>
-          <p class="section-desc">推荐用固定列周报表维护，业务同学可以直接在腾讯文档 / Excel 里填写，再粘贴或导入到页面。</p>
+          <p class="section-desc">推荐用列式周报表维护：项目模块 / 子模块 / 状态 / Owner / W1~W4。业务同学可在企微文档中填写，复制粘贴或导入到此页面。</p>
         </div>
       </div>
       <div class="update-panel">
@@ -298,9 +298,9 @@
           </div>
         </div>
         <ul class="update-list">
-          <li><b>固定列格式：</b>项目模块、子模块、周次、状态、进展、Owner。状态可留空，或填 On Track / At Risk / Needs Alignment。</li>
-          <li><b>推荐流程：</b>每周各负责人在共享表格里按固定列更新，汇总人复制整张表到左侧文本框，点击"应用表格内容"。</li>
-          <li><b>共享方式：</b>编辑完成后点击"导出周报表"下载 CSV，发给同事；同事用"导入 CSV"加载。</li>
+          <li><b>列式格式：</b>项目模块、子模块、状态、Owner、W1、W2、W3、W4。每个子模块占一行，四个周的内容各自占一列。状态可选 On Track / At Risk / Needs Alignment / Todo。</li>
+          <li><b>推荐流程：</b>每周各负责人在<a href="https://doc.weixin.qq.com/sheet/e3_AbcAbgZxADECNIM6ZhJmVTkqAWGHW?scode=AJEAIQdfAAoKVFmXalAbcAbgZxADE&tab=7tk20e" target="_blank">企微周报模板</a>里按列更新，汇总人复制整张表到左侧文本框，点击"应用表格内容"。</li>
+          <li><b>共享方式：</b>编辑完成后点击"导出周报表"下载 TSV，发给同事导入。</li>
         </ul>
       </div>
     </section>
@@ -323,7 +323,7 @@
     const STORAGE_KEY = "tengyi-weekly-workbench";
 
     const defaultWorkspaceData = {
-      version: 3,
+      version: 4,
       cycle: "W1 本周",
       updatedAt: "2026-06-17",
       weeks: [
@@ -333,7 +333,8 @@
         { key: "Week 4", label: "W4", date: "7/8" }
       ],
       docs: [
-        { title: "厂店通服务商进店代播腾讯激励专项", project: "厂店", desc: "腾讯文档：包含项目规划汇总、服务商执行情况、服务商主播、测试规划等。", url: "https://doc.weixin.qq.com/sheet/e3_AUkAzgaGANACNS9yCfbkaQaqCQN0W?scode=AJEAIQdfAAoHLgkVOWAbcAbgZxADE&tab=BB08J2" },
+        { title: "腾易周度工作台 · 周报模板", project: "周报填报", desc: "企业微信文档：空白周报模板，业务同学按列填写（项目模块 / 子模块 / 状态 / Owner / W1~W4）。", url: "https://doc.weixin.qq.com/sheet/e3_AbcAbgZxADECNIM6ZhJmVTkqAWGHW?scode=AJEAIQdfAAoKVFmXalAbcAbgZxADE&tab=7tk20e" },
+        { title: "厂店通服务商进店代播腾讯激励专项", project: "厂店", desc: "企业微信文档：包含项目规划汇总、服务商执行情况、服务商主播、测试规划等。", url: "https://doc.weixin.qq.com/sheet/e3_AUkAzgaGANACNS9yCfbkaQaqCQN0W?scode=AJEAIQdfAAoHLgkVOWAbcAbgZxADE&tab=BB08J2" },
         { title: "大交通厂店业务关键打法拆解", project: "企微 / 厂店策略", desc: "企业微信文档：承接大交通厂店整体策略、企微链路和视频号生态打法。", url: "https://doc.weixin.qq.com/doc/w3_ARoAEgajAJ4CNrjWiC5orQyWqzAOR?scode=AJEAIQdfAAowdssu4KARoAEgajAJ4" },
         { title: "竞价专项文档", project: "线索中台", desc: "腾讯文档：包含竞价专项推进表、客户数据、26 年规划等。", url: "https://docs.qq.com/sheet/DVGVyekp6ZndQbEpF?tab=000001" }
       ],
@@ -353,14 +354,12 @@
           workstreams: [
             { id: "leads-progress", name: "上线进展", owner: "周星星", desc: "客户上线、消耗规模、后效表现。", cells: [{ status: "on-track", text: "通过线索中台模式提升 PCAD 板块拿量能力，降低 CPL，提升后效。当前累计上线 9 个客户，YTD 370w，QTD 366w；9 个客户在后效上均有一定提升，已上线客户消耗整体增长 8%。投放客户：长安、凯程、腾势、阿维塔、深蓝、一汽丰田、长城、广汽丰田、东风奕派。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
             { id: "leads-opportunity", name: "商机拓展", owner: "周星星", desc: "Q2 新增客户、消耗拉动、客户排摸。", cells: [{ status: "on-track", text: "应用场景包括线索增量、降低 CPL、提升到店率/成交率。Q2 商机：一汽捷达（新增）、一汽大众（新增）、捷途、奇瑞、日产、一汽奥迪、红旗、奔驰；消耗拉动分为提升消耗 2 个客户、停投拉回 3 个客户、客户要求提高稳住预算 3 个客户。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
-            { id: "leads-acceptance", name: "验收与口径", owner: "周星星 / 孙长柱", desc: "试点复盘、客户分类、前后效监控。", cells: [{ status: "on-track", text: "3 月底已 0-1 跑通线索中台流程，腾势试点上线，累计消耗 4.4 万。客户需求分两类：降 CPL 客户如长安凯程；提后效客户包括长安汽车、深蓝、阿维塔、比亚迪、奕派、一汽丰田、捷途、奇瑞、日产、长城、一汽奥迪、理想等。后续持续跑通链路、监控前后效、完成案例包装。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] }
           ]
         },
         {
           id: "wechat", name: "企微", status: "decision", statusText: "Needs Alignment", owner: "马钰乔",
           summary: "探索企微在前链路和后链路共同正向的标杆案例，沉淀适合大交通的产品形态。",
           workstreams: [
-            { id: "wechat-connection", name: "企微承接链路", owner: "马钰乔", desc: "企微+获客助手、直连企微、先表单后企微。", cells: [{ status: "decision", text: "产品链路探索包括添加企微+转化宝、先表单后企微（深 OG 加后效提升）、企微/微信客服+AI 转化工具。直连企微新链路为外层 -> 落地页 -> 多问答组件 -> 加微，用于筛选高意向客户，解决经销商温冷线索占比高的问题，后续在蔚来客户上试点。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
             { id: "wechat-cs", name: "微信客服链路", owner: "马钰乔", desc: "易车线索链路后效追踪、线索下发实时化、商机排摸。", cells: [{ status: "on-track", text: "易慧智能微信客服链路成交率约 1%，略低于易车表单链路；当前优化线索下发时间，做到实时下发并继续追踪效果。商机排摸在案例包装中，本月做一轮商机收集。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] },
             { id: "wechat-tooling", name: "数据与工具", owner: "马钰乔 / 产品技术", desc: "数据打通、运营 SOP、AI 工具选型。", cells: [{ status: "risk", text: "已突破线索通回传字段限制，能够支持客户 CRM 必填字段和 clickid 字段；线索下发和一方数据回传技术上无卡点。当前痛点集中在后链路运营监控工具、运营 SOP 指导、低意向人群模型优化；AI 工具侧汽车客户对三方工具数据安全要求高，可选易车易慧智能或 AMS CHATBOT。" }, { status: "", text: "" }, { status: "", text: "" }, { status: "", text: "" }] }
           ]
@@ -387,10 +386,22 @@
       if (!saved) return structuredClone(defaultWorkspaceData);
       try {
         const parsed = JSON.parse(saved);
-        return parsed.version === defaultWorkspaceData.version ? parsed : structuredClone(defaultWorkspaceData);
+        return parsed.version >= 3 ? sanitizeWorkspaceData(parsed) : structuredClone(defaultWorkspaceData);
       } catch (e) {
         return structuredClone(defaultWorkspaceData);
       }
+    }
+
+    function sanitizeWorkspaceData(data) {
+      if (!data || !Array.isArray(data.projects)) return data;
+      data.projects.forEach(function(project) {
+        if (!Array.isArray(project.workstreams)) return;
+        project.workstreams = project.workstreams.filter(function(stream) {
+          return stream.id !== "leads-acceptance" && stream.name !== "验收与口径" &&
+            stream.id !== "wechat-connection" && stream.name !== "企微承接链路";
+        });
+      });
+      return data;
     }
 
     function saveToLocal() {
@@ -452,7 +463,7 @@
         .channel("workbench-sync")
         .on("postgres_changes", { event: "*", schema: "public", table: "workbench", filter: "id=eq.tengyi-weekly" }, function(payload) {
           if (payload.new && payload.new.version > cloudVersion) {
-            workspaceData = payload.new.workspace;
+            workspaceData = sanitizeWorkspaceData(payload.new.workspace);
             cloudVersion = payload.new.version;
             saveToLocal();
             renderAll();
@@ -492,7 +503,7 @@
       if (cloudOk) {
         var cloudData = await loadFromCloud();
         if (cloudData) {
-          workspaceData = cloudData;
+          workspaceData = sanitizeWorkspaceData(cloudData);
         } else {
           // Cloud connected but no doc yet — upload initial data
           workspaceData = loadFromLocal();
@@ -595,15 +606,26 @@
       return m[v] || "todo";
     }
 
+    // Column format: 项目模块 | 子模块 | 状态 | Owner | W1 | W2 | W3 | W4
+    // One row per submodule, W1 status = the "状态" column
     function rowsFromData(blank) {
       blank = !!blank;
-      var rows = [["项目模块", "子模块", "周次", "状态", "进展", "Owner"]];
+      var header = ["项目模块", "子模块", "状态", "Owner"];
+      workspaceData.weeks.forEach(function(w) { header.push(weekKey(w)); });
+      var rows = [header];
       workspaceData.projects.forEach(function(proj) {
         proj.workstreams.forEach(function(stream) {
+          var row = [proj.name, stream.name];
+          // Status = W1 cell status
+          var w1Cell = stream.cells[0] || { status: "todo", text: "" };
+          row.push(blank ? "" : statusToLabel(w1Cell.status));
+          row.push(stream.owner || proj.owner || "");
+          // W1~W4 text
           workspaceData.weeks.forEach(function(week, wi) {
             var cell = stream.cells[wi] || { status: "todo", text: "" };
-            rows.push([proj.name, stream.name, weekKey(week), blank ? "" : statusToLabel(cell.status), blank ? "" : cell.text, stream.owner || proj.owner || ""]);
+            row.push(blank ? "" : cell.text);
           });
+          rows.push(row);
         });
       });
       return rows;
@@ -642,23 +664,55 @@
     function applyRows(rows) {
       if (!rows.length) return;
       var hdr = rows[0].map(function(c) { return c.trim(); });
-      var required = ["项目模块", "子模块", "周次", "状态", "进展"];
-      var missing = required.filter(function(n) { return !hdr.includes(n); });
-      if (missing.length) { alert("缺少必要列：" + missing.join("、")); return; }
-      var idx = function(n) { return hdr.indexOf(n); };
-      var pi = idx("项目模块"), si = idx("子模块"), wi = idx("周次"), sti = idx("状态"), ti = idx("进展"), oi = hdr.includes("Owner") ? idx("Owner") : -1;
+      var isOldFormat = hdr.includes("周次");
       var changed = 0;
-      rows.slice(1).forEach(function(row) {
-        var proj = workspaceData.projects.find(function(p) { return p.name === row[pi]; });
-        if (!proj) return;
-        var stream = proj.workstreams.find(function(s) { return s.name === row[si]; });
-        if (!stream) return;
-        var weekI = workspaceData.weeks.findIndex(function(w) { return weekKey(w) === row[wi] || (typeof w !== "string" && (w.label === row[wi] || w.date === row[wi])); });
-        if (weekI < 0) return;
-        stream.cells[weekI] = { status: labelToStatus(row[sti]), text: row[ti] || "" };
-        if (oi >= 0 && row[oi]) stream.owner = row[oi];
-        changed++;
-      });
+
+      if (isOldFormat) {
+        // Legacy format: 项目模块 | 子模块 | 周次 | 状态 | 进展 | Owner
+        var idx = function(n) { return hdr.indexOf(n); };
+        var pi = idx("项目模块"), si = idx("子模块"), wi = idx("周次"), sti = idx("状态"), ti = idx("进展"), oi = hdr.includes("Owner") ? idx("Owner") : -1;
+        rows.slice(1).forEach(function(row) {
+          var proj = workspaceData.projects.find(function(p) { return p.name === row[pi]; });
+          if (!proj) return;
+          var stream = proj.workstreams.find(function(s) { return s.name === row[si]; });
+          if (!stream) return;
+          var weekI = workspaceData.weeks.findIndex(function(w) { return weekKey(w) === row[wi] || (typeof w !== "string" && (w.label === row[wi] || w.date === row[wi])); });
+          if (weekI < 0) return;
+          stream.cells[weekI] = { status: labelToStatus(row[sti]), text: row[ti] || "" };
+          if (oi >= 0 && row[oi]) stream.owner = row[oi];
+          changed++;
+        });
+      } else {
+        // New column format: 项目模块 | 子模块 | 状态 | Owner | W1 | W2 | W3 | W4
+        var idxNew = function(n) { return hdr.indexOf(n); };
+        var pIdx = idxNew("项目模块"), sIdx = idxNew("子模块");
+        if (pIdx < 0 || sIdx < 0) { alert("缺少必要列：项目模块、子模块"); return; }
+        var stIdx = hdr.includes("状态") ? idxNew("状态") : -1;
+        var owIdx = hdr.includes("Owner") ? idxNew("Owner") : -1;
+        // Remaining columns (after 项目模块, 子模块, 状态, Owner) are W1..W4
+        var knownCols = new Set(["项目模块", "子模块", "状态", "Owner"]);
+        var weekColIndices = [];
+        hdr.forEach(function(col, i) { if (!knownCols.has(col)) weekColIndices.push(i); });
+        rows.slice(1).forEach(function(row) {
+          var proj = workspaceData.projects.find(function(p) { return p.name === row[pIdx]; });
+          if (!proj) return;
+          var stream = proj.workstreams.find(function(s) { return s.name === row[sIdx]; });
+          if (!stream) return;
+          // Status → W1 cell status
+          if (stIdx >= 0 && row[stIdx]) {
+            stream.cells[0].status = labelToStatus(row[stIdx]);
+          }
+          // W1~W4 text from remaining columns
+          weekColIndices.forEach(function(colI, wi) {
+            if (wi < workspaceData.weeks.length && row[colI]) {
+              stream.cells[wi].text = row[colI];
+            }
+          });
+          // Owner
+          if (owIdx >= 0 && row[owIdx]) stream.owner = row[owIdx];
+          changed++;
+        });
+      }
       saveData();
       renderAll();
       alert("已更新 " + changed + " 条周报记录。");
@@ -694,9 +748,18 @@
       renderBoard();
     });
     document.getElementById("applyTable").addEventListener("click", function() { applyRows(parseTableText(document.getElementById("tableBox").value)); });
-    document.getElementById("exportTable").addEventListener("click", function() { downloadText("腾易周度工作台_当前周报.csv", toCsv(rowsFromData(false)), "text/csv;charset=utf-8"); });
-    document.getElementById("exportTableTop").addEventListener("click", function() { downloadText("腾易周度工作台_当前周报.csv", toCsv(rowsFromData(false)), "text/csv;charset=utf-8"); });
-    document.getElementById("downloadTemplate").addEventListener("click", function() { downloadText("腾易周度工作台_空白周报模板.csv", toCsv(rowsFromData(true)), "text/csv;charset=utf-8"); });
+    document.getElementById("exportTable").addEventListener("click", function() {
+      var rows = rowsFromData(false);
+      downloadText("腾易周度工作台_当前周报.tsv", rows.map(function(r) { return r.join("\t"); }).join("\n"), "text/tab-separated-values;charset=utf-8");
+    });
+    document.getElementById("exportTableTop").addEventListener("click", function() {
+      var rows = rowsFromData(false);
+      downloadText("腾易周度工作台_当前周报.tsv", rows.map(function(r) { return r.join("\t"); }).join("\n"), "text/tab-separated-values;charset=utf-8");
+    });
+    document.getElementById("downloadTemplate").addEventListener("click", function() {
+      var rows = rowsFromData(true);
+      downloadText("腾易周度工作台_空白周报模板.tsv", rows.map(function(r) { return r.join("\t"); }).join("\n"), "text/tab-separated-values;charset=utf-8");
+    });
     document.getElementById("importTable").addEventListener("change", function(e) { importTableFile(e.target.files[0]); });
     document.getElementById("importTableTop").addEventListener("change", function(e) { importTableFile(e.target.files[0]); });
 
